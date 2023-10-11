@@ -1,0 +1,102 @@
+/* Estilo para o corpo da página */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, rgb(231, 7, 45), #cc2e6b);
+}
+
+/* Estilo para a seção de cadastro de novo produto */
+#novoProduto {
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+}
+
+#tabelaCadastro {
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#tabelaCadastro input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#btnCadastrar {
+    background-color: #ff00dd;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+#btnCadastrar:hover {
+    background-color: #ff00d4;
+}
+
+/* Estilo para a tabela de resultados */
+#listaProdutos {
+    margin: 10px;
+    border-radius: 10px;
+    background-color: #f3b7f0;
+    padding: 10px;
+    overflow: auto;
+    max-height: 300px; /* Defina a altura máxima da tabela com barras de rolagem */
+}
+
+table {
+    width: 100%;
+}
+
+table, th, td {
+    border: 1px solid #ffffff;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #d848d1;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Estilo para os botões de editar e excluir na tabela */
+table button {
+    background-color: #e45c5c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+table button:hover {
+    background-color: #005f75;
+}
+
+/* Estilo para barras de rolagem personalizadas */
+#listaProdutos::-webkit-scrollbar {
+    width: 10px;
+}
+
+#listaProdutos::-webkit-scrollbar-thumb {
+    background-color: #008CBA;
+    border-radius: 10px;
+}
+
+#listaProdutos::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+}

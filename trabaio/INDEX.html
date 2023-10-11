@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Resultado HTTPXMLRequest</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="estilo.css">
+</head>
+</head>
+
+
+<body>
+    <div id="novoProduto">
+        Cadastro de Novo Produto
+        <table id="tabelaCadastro">
+            <tr>
+                <td><input type="text" id="idProduto" placeholder="ID"></td>
+                <td><input type="text" id="codBarras" placeholder="Codigo de Barras"></td>
+                <td><input type="text" id="produto" placeholder="Produto"></td>
+
+            <tr>
+                <td><input type="text" id="marca" placeholder="Marca"></td>
+                <td><input type="text" id="modelo" placeholder="Modelo"></td>
+                <td><input type="text" id="valor" placeholder="Valor"></td>
+            
+            <tr>
+                <td><button id="btnCadastrar" onclick="cadastroProduto();">Cadastrar</button></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="imagem">
+        <img src="caminho/para/sua/imagem.jpg" alt="Descrição da imagem">
+    </div>
+
+    <div id="resposta"></div>
+
+    <div id="listaProdutos">
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cod Barras</th>
+                    <th>Produto</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Valor</th>
+                    <th>Editar</th>
+                    <th>Excluir</th>
+                </tr>
+            </thead>
+            <tbody id="resultadoTabela">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+
+        function fazerRequisicao() {
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    exibirResultado(data);
+                }
+            };
+
+            xhr.open("GET", "http://reserva.Laboratorio.app.br:10100/produtos", true);
+            xhr.send();
+        }
+
+        // Função para exibir os resultados na tabela
+        function exibirResultado(data) {
+            var tabela = document.getElementById("resultadoTabela");
+            tabela.innerHTML = ""; // Limpa a tabela
+
+            data.forEach(function (item) {
+                var row = tabela.insertRow();
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+                var cell5 = row.insertCell(4);
+                var cell6 = row.insertCell(5);
+                var cell7 = row.insertCell(6);
+                var cell8 = row.insertCell(7);
+
+                cell1.innerHTML = item.id;
+                cell2.innerHTML = item.codBarras;
+                cell3.innerHTML = item.produto;
+                cell4.innerHTML = item.marca;
+                cell5.innerHTML = item.modelo;
+                cell6.innerHTML = item.valor;
+                cell7.innerHTML = '<button onclick="editarProduto(' + item.id + ')">Editar</button>';
+                cell8.innerHTML = '<button onclick="excluirProduto(' + item.id + ')">Excluir</button>';
+            });
+        }
+
+        // Chame a função para fazer a requisição quando a página carregar
+        fazerRequisicao();
+
+        function cadastroProduto() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    document.getElementById("resposta").innerHTML = xhr.responseText;
+                    fazerRequisicao();
+                }
+            };
+
+            let id = parseInt(document.getElementById("idProduto").value);
+            let codBarras = document.getElementById("codBarras").value;
+            let produto = document.getElementById("produto").value;
+            let marca = document.getElementById("marca").value;
+            let modelo = document.getElementById("modelo").value;
+            let valor = parseInt(document.getElementById("valor").value);
+
+            const dados = {
+                id: id,
+                codBarras: codBarras,
+                produto: produto,
+                marca: marca,
+                modelo: modelo,
+                valor: valor
+            };
+
+            let envio = JSON.stringify(dados);
+
+            xhr.open("POST", "http://reserva.Laboratorio.app.br:10100/produto", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(envio);
+
+            // Limpar os campos após o cadastro
+            document.getElementById("idProduto").value = '';
+            document.getElementById("codBarras").value = '';
+            document.getElementById("produto").value = '';
+            document.getElementById("marca").value = '';
+            document.getElementById("modelo").value = '';
+            document.getElementById("valor").value = '';
+        }
+
+        function editarProduto(idProduto) {
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var produtoEdit = JSON.parse(xhr.responseText);
+
+                        // Preencha os campos de entrada com os dados do produto para edição
+                        document.getElementById("idProduto").value = produtoEdit.id;
+                        document.getElementById("codBarras").value = produtoEdit.codBarras;
+                        document.getElementById("produto").value = produtoEdit.produto;
+                        document.getElementById("marca").value = produtoEdit.marca;
+                        document.getElementById("modelo").value = produtoEdit.modelo;
+                        document.getElementById("valor").value = produtoEdit.valor;
+
+                        // Altere o texto do botão "Cadastrar" para "Salvar Edição" e defina o manipulador de clique
+                        var salvarButton = document.getElementById('btnCadastrar');
+                        salvarButton.innerHTML = 'Salvar Edição';
+                        salvarButton.onclick = function () {
+                            salvarEdicao(parseInt(idProduto));
+                        };
+                    } else {
+                        alert("Erro ao buscar os dados do produto para edição. Status: " + xhr.status);
+                    }
+                }
+            };
+
+            xhr.open("GET", "http://reserva.Laboratorio.app.br:10100/produto/" + idProduto, true);
+            xhr.send();
+        }
+
+        function salvarEdicao(idProduto) {
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        alert("Produto atualizado com sucesso!");
+                        // Restaure o botão "Cadastrar"
+                        var salvarButton = document.getElementById('btnCadastrar');
+                        salvarButton.innerHTML = 'Cadastrar';
+                        salvarButton.onclick = function () {
+                            cadastroProduto();
+                        };
+                        // Limpe os campos após a edição
+                        document.getElementById("idProduto").value = '';
+                        document.getElementById("codBarras").value = '';
+                        document.getElementById("produto").value = '';
+                        document.getElementById("marca").value = '';
+                        document.getElementById("modelo").value = '';
+                        document.getElementById("valor").value = '';
+                        // Atualize a lista de produtos
+                        fazerRequisicao();
+                    } else {
+                        alert("Erro ao atualizar o produto. Status: " + xhr.status);
+                    }
+                }
+            };
+
+            // Recupere os valores atualizados dos campos de entrada
+            const id = parseInt(document.getElementById("idProduto").value);
+            const codBarras = document.getElementById("codBarras").value;
+            const produto = document.getElementById("produto").value;
+            const marca = document.getElementById("marca").value;
+            const modelo = document.getElementById("modelo").value;
+            const valor = parseInt(document.getElementById("valor").value);
+
+            // Crie um objeto com os dados atualizados
+            const dadosAtualizados = {
+                id: id,
+                codBarras: codBarras,
+                produto: produto,
+                marca: marca,
+                modelo: modelo,
+                valor: valor
+            };
+            console.log(dadosAtualizados)
+            xhr.open("PUT", "http://reserva.Laboratorio.app.br:10100/produto/" + idProduto, true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify(dadosAtualizados));
+        }
+
+        function excluirProduto(idProduto) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    document.getElementById("resposta").innerHTML = xhr.responseText;
+                    fazerRequisicao();
+                }
+            };
+
+            xhr.open("DELETE", "http://reserva.Laboratorio.app.br:10100/produto/" + idProduto, true);
+            xhr.send();
+        }
+
+
+    </script>
+</body>
+
+</html>
